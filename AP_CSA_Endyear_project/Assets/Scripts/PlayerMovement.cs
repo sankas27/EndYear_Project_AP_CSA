@@ -4,41 +4,38 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed = 5f;
+    public float speed = 2f;
 
     private CharacterController controller;
-    private PlayerControls controls;
-    private Vector2 moveInput;
 
-    private void Awake()
+    private void Start()
     {
         controller = GetComponent<CharacterController>();
-
-        controls = new PlayerControls();
-
-        controls.Player.Move.performed +=
-            ctx => moveInput = ctx.ReadValue<Vector2>();
-
-        controls.Player.Move.canceled +=
-            ctx => moveInput = Vector2.zero;
-    }
-
-    private void OnEnable()
-    {
-        controls.Enable();
-    }
-
-    private void OnDisable()
-    {
-        controls.Disable();
     }
 
     private void Update()
     {
-        Vector3 move =
-            transform.right * moveInput.x +
-            transform.forward * moveInput.y;
+        Vector3 move = Vector3.zero;
 
-        controller.Move(move * speed * Time.deltaTime);
+        if (Keyboard.current.wKey.isPressed)
+            move += Vector3.forward;
+
+        if (Keyboard.current.sKey.isPressed)
+            move += Vector3.back;
+
+        if (Keyboard.current.aKey.isPressed)
+            move += Vector3.left;
+
+        if (Keyboard.current.dKey.isPressed)
+            move += Vector3.right;
+
+
+
+    if (Keyboard.current.wKey.isPressed)
+    {
+        Debug.Log("W PRESSED");
+    }
+
+        controller.Move(move.normalized * speed * Time.deltaTime);
     }
 }
