@@ -1,25 +1,34 @@
 using UnityEngine;
+using TMPro;
 
 public class Timer : MonoBehaviour
 {
-    public float timeRemaining = 60f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float timeRemaining = 180f;
+    [SerializeField] private TextMeshProUGUI timerText;
 
-    // Update is called once per frame
+    private bool timerRunning = true;
+
     void Update()
     {
-        if (timeRemaining > 0)
+        if (timerRunning)
         {
             timeRemaining -= Time.deltaTime;
+
+            if (timeRemaining <= 0)
+            {
+                timeRemaining = 0;
+                timerRunning = false;
+            }
+
+            DisplayTime(timeRemaining);
         }
-        else
-        {
-            Debug.Log("Time's Up!");
-            enabled = false;
-        }
+    }
+
+    void DisplayTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 }
