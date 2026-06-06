@@ -7,6 +7,7 @@ public class Timer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
 
     private bool timerRunning = true;
+    public bool bombDefused = false;
 
     void Update()
     {
@@ -18,6 +19,9 @@ public class Timer : MonoBehaviour
             {
                 timeRemaining = 0;
                 timerRunning = false;
+            }
+            if (bombDefused){
+            return;
             }
 
             DisplayTime(timeRemaining);
