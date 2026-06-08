@@ -5,8 +5,14 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Game_Screen.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Final_Screen.unity
+    guid: 6c7518fe166b85c4db8517f42d5d97e6
+  - enabled: 1
+    path: Assets/Scenes/Puzzles.unity
+    guid: 770960317e0cde444ba5465344484be1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
