@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 
 public class ButtonMod : MonoBehaviour{
+    public Renderer statusLight;
     public Material redMat;
     public Material blueMat;
     public Material yellowMat;
@@ -70,7 +71,7 @@ public class ButtonMod : MonoBehaviour{
         Debug.Log("Presses: " + currentPresses);
 
         if (currentPresses == requiredPresses){
-            Debug.Log("Module Solved");
+            SolveModule();
         }
 
         if (currentPresses > requiredPresses){
@@ -82,4 +83,8 @@ public class ButtonMod : MonoBehaviour{
     private void ResetButton(){
         transform.localPosition = originalPosition;
     }   
+    void SolveModule(){
+        Debug.Log("Module Solved!");
+        statusLight.material.color = Color.green;
+    }
 }
