@@ -16,6 +16,7 @@ public class KeypadManager : MonoBehaviour
     public KeypadButton key2Button;
     public KeypadButton key3Button;
     public KeypadButton key4Button;
+    public Renderer statusLight;
 
     void Start(){
         System.Collections.Generic.List<string> availableSymbols = new System.Collections.Generic.List<string>(allSymbols);
@@ -48,12 +49,16 @@ Debug.Log("Text4 = " + key4Text.text);
             }
         }
     }
+    void SolveModule(){
+        Debug.Log("Module Solved!");
+        statusLight.material.color = Color.green;
+    }
 
     public void PressButton(string symbol){
     if (symbol == correctOrder[currentStep]){
         currentStep++;
         if (currentStep >= correctOrder.Length){
-            Debug.Log("Module Solved");
+            SolveModule();
         }
     }
     else{

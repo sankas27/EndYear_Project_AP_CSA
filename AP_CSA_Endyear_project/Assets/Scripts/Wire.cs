@@ -5,9 +5,9 @@ public class Wire : MonoBehaviour
 {
     public Timer timer;
     public bool correctWire;
-    private bool alreadyCut = false;
     private static int mistakes = 0;
     private Vector3 originalScale;
+    public Renderer statusLight;
 
     private void Start()
     {
@@ -30,7 +30,7 @@ public class Wire : MonoBehaviour
         {
             timer.bombDefused = true;
             transform.Rotate(0, 0, 45);
-            Debug.Log("Bomb Defused");
+            SolveModule();
         }
         else
         {
@@ -44,5 +44,9 @@ public class Wire : MonoBehaviour
                 SceneManager.LoadScene("Final_Screen");
             }
         }
+    }
+    void SolveModule(){
+        Debug.Log("Module Solved!");
+        statusLight.material.color = Color.green;
     }
 }
