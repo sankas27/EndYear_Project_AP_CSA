@@ -1,53 +1,93 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BombViewer : MonoBehaviour
 {
     public Transform target;
 
-    public float distance = 4f;
-    public float height = 3f;
+    public bool controlsEnabled = true;
+
+    [Header("Orbit")]
     public float rotationSpeed = 90f;
 
-    private float currentAngle = 0f;
+    [Header("Zoom")]
+    public float distance = 500f;
+    private float targetDistance;
+
+    public float zoomStep = 50f;
+    public float zoomSmoothness = 8f;
+    public float minDistance = 300f;
+    public float maxDistance = 1000f;
+
+    [Header("Vertical Rotation")]
+    public float verticalAngle = 20f;
+    public float verticalSpeed = 60f;
+    public float minVerticalAngle = 0f;
+    public float maxVerticalAngle = 90f;
+
+    private float horizontalAngle = 0f;
 
     void Start()
     {
-        if (target == null)
-        {
-            Debug.LogError("BombViewer: No target assigned!");
+        targetDistance = distance;
+        UpdateCameraPosition();
+    }
+
+    void Update()
+    {
+        if (!controlsEnabled)
             return;
-        }
+
+        if (target == null || Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.leftArrowKey.isPressed)
+            horizontalAngle -= rotationSpeed * Time.deltaTime;
+
+        if (Keyboard.current.rightArrowKey.isPressed)
+            horizontalAngle += rotationSpeed * Time.deltaTime;
+
+        if (Keyboard.current.upArrowKey.isPressed)
+            verticalAngle += verticalSpeed * Time.deltaTime;
+
+        if (Keyboard.current.downArrowKey.isPressed)
+            verticalAngle -= verticalSpeed * Time.deltaTime;
+
+        if (Keyboard.current.iKey.wasPressedThisFrame)
+            targetDistance -= zoomStep;
+
+        if (Keyboard.current.oKey.wasPressedThisFrame)
+            targetDistance += zoomStep;
+
+        targetDistance = Mathf.Clamp(targetDistance, minDistance, maxDistance);
+
+        distance = Mathf.Lerp(
+            distance,
+            targetDistance,
+            zoomSmoothness * Time.deltaTime
+        );
+
+        verticalAngle = Mathf.Clamp(
+            verticalAngle,
+            minVerticalAngle,
+            maxVerticalAngle
+        );
 
         UpdateCameraPosition();
     }
+
     void UpdateCameraPosition()
-{
-    float radians = currentAngle * Mathf.Deg2Rad;
-
-    Vector3 offset = new Vector3(
-        Mathf.Sin(radians) * distance,
-        height,
-        Mathf.Cos(radians) * distance
-    );
-
-    transform.position = target.position + offset;
-    transform.LookAt(target.position);
-}
-    void Update()
-{
-    float input = 0f;
-
-    if (UnityEngine.InputSystem.Keyboard.current != null)
     {
-        if (UnityEngine.InputSystem.Keyboard.current.leftArrowKey.isPressed)
-            input = -1f;
+        float hRad = horizontalAngle * Mathf.Deg2Rad;
+        float vRad = verticalAngle * Mathf.Deg2Rad;
 
-        if (UnityEngine.InputSystem.Keyboard.current.rightArrowKey.isPressed)
-            input = 1f;
+        Vector3 offset = new Vector3(
+            Mathf.Sin(hRad) * Mathf.Cos(vRad),
+            Mathf.Sin(vRad),
+            Mathf.Cos(hRad) * Mathf.Cos(vRad)
+        ) * distance;
+
+        transform.position = target.position + offset;
+        transform.LookAt(target.position, Vector3.up);
     }
-
-    currentAngle += input * rotationSpeed * Time.deltaTime;
-
-    UpdateCameraPosition();
-}
 }

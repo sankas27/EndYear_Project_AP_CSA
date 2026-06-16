@@ -3,33 +3,52 @@ using UnityEngine.UI;
 
 public class Button_Script : MonoBehaviour
 {
-    public Button mainButton; 
+    public Button mainButton;
+    public Renderer statusLight;
+    public BombGameManager gameManager;
+
+    public int requiredClicks = 5;
 
     private int clickCount = 0;
+    private bool solved = false;
 
     public void ButtonPressed()
     {
+        if (solved) return;
+
         clickCount++;
-
         Debug.Log("Clicks: " + clickCount);
+    }
 
-        if (clickCount == 5)
+    public void ConfirmAnswer()
+    {
+        if (solved) return;
+
+        if (clickCount == requiredClicks)
         {
-            ColorBlock colors = mainButton.colors;
-            colors.normalColor = Color.green;
-            colors.highlightedColor = Color.green;
-            mainButton.colors = colors;
-        }
+            solved = true;
+            Debug.Log("Correct!");
 
-        else if (clickCount > 5)
+            if (statusLight != null)
+                statusLight.material.color = Color.green;
+
+            if (gameManager != null)
+                gameManager.PuzzleSolved();
+        }
+        else
         {
-            Debug.Log("Game Over");
+            Debug.Log("Wrong! Resetting clicks.");
 
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            if (gameManager != null)
+                gameManager.AddMistake();
+
+            ResetAnswer();
         }
+    }
+
+    public void ResetAnswer()
+    {
+        clickCount = 0;
+        Debug.Log("Click count reset to 0.");
     }
 }
