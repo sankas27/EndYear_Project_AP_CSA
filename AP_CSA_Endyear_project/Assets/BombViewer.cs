@@ -80,6 +80,23 @@ public class BombViewer : MonoBehaviour
     }
 
     void UpdateCameraPosition()
+{
+    float radians = currentAngle * Mathf.Deg2Rad;
+
+    Vector3 offset = new Vector3(
+        Mathf.Sin(radians) * distance,
+        height,
+        Mathf.Cos(radians) * distance
+    );
+
+    transform.position = target.position + offset;
+    transform.LookAt(target.position);
+}
+    void Update()
+{
+    float input = 0f;
+
+    if (UnityEngine.InputSystem.Keyboard.current != null)
     {
         float hRad = horizontalAngle * Mathf.Deg2Rad;
         float vRad = verticalAngle * Mathf.Deg2Rad;
@@ -93,4 +110,9 @@ public class BombViewer : MonoBehaviour
         transform.position = target.position + offset;
         transform.LookAt(target.position);
     }
+
+    currentAngle += input * rotationSpeed * Time.deltaTime;
+
+    UpdateCameraPosition();
+}
 }
