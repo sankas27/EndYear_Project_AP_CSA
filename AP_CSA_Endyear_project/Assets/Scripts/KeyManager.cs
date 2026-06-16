@@ -19,10 +19,10 @@ public class KeyManager : MonoBehaviour
     public TextMeshPro key3Text;
     public TextMeshPro key4Text;
 
-    public KeypadButton key1Button;
-    public KeypadButton key2Button;
-    public KeypadButton key3Button;
-    public KeypadButton key4Button;
+    public KeyButton key1Button;
+    public KeyButton key2Button;
+    public KeyButton key3Button;
+    public KeyButton key4Button;
 
     public Renderer statusLight;
 

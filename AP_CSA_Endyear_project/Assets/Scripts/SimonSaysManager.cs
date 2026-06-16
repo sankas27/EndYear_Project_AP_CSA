@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimonManager : MonoBehaviour
+public class SimonManager : MonoBehaviour, IConfirmablePuzzle
 {
     public BombGameManager gameManager;
 
@@ -17,6 +17,9 @@ public class SimonManager : MonoBehaviour
     private bool canInput = false;
     private bool solved = false;
 
+    private bool fullSequenceEntered = false;
+    private bool madeMistake = false;
+
     public enum SimonColor { Blue, Green, Red, Yellow }
 
     private void Start()
@@ -27,8 +30,7 @@ public class SimonManager : MonoBehaviour
 
     void AddRandomColor()
     {
-        SimonColor newColor = (SimonColor)Random.Range(0, 4);
-        sequence.Add(newColor);
+        sequence.Add((SimonColor)Random.Range(0, 4));
     }
 
     IEnumerator PlaySequence()
@@ -43,6 +45,8 @@ public class SimonManager : MonoBehaviour
         }
 
         currentInputIndex = 0;
+        fullSequenceEntered = false;
+        madeMistake = false;
         canInput = true;
     }
 
@@ -102,7 +106,7 @@ public class SimonManager : MonoBehaviour
 
     void CheckInput(SimonColor pressedColor)
     {
-        if (solved || !canInput) return;
+        if (solved || !canInput || fullSequenceEntered) return;
 
         StartCoroutine(PressAnimation(pressedColor));
 
@@ -114,25 +118,49 @@ public class SimonManager : MonoBehaviour
 
             if (currentInputIndex >= sequence.Count)
             {
-                if (sequence.Count >= 4)
-                {
-                    SolveModule();
-                    return;
-                }
-
+                fullSequenceEntered = true;
                 canInput = false;
-                AddRandomColor();
-                StartCoroutine(PlaySequence());
+                Debug.Log("Simon sequence entered. Press confirm.");
             }
         }
         else
         {
-            gameManager.AddMistake();
+            madeMistake = true;
+            fullSequenceEntered = true;
+            canInput = false;
+            Debug.Log("Simon wrong input. Press confirm.");
+        }
+    }
 
-            sequence.Clear();
+    public void ConfirmAnswer()
+    {
+        if (solved) return;
+
+        if (madeMistake || !fullSequenceEntered)
+        {
+            if (gameManager != null)
+                gameManager.AddMistake();
+
+            ResetAnswer();
+            return;
+        }
+
+        if (sequence.Count >= 4)
+        {
+            SolveModule();
+        }
+        else
+        {
             AddRandomColor();
             StartCoroutine(PlaySequence());
         }
+    }
+
+    public void ResetAnswer()
+    {
+        sequence.Clear();
+        AddRandomColor();
+        StartCoroutine(PlaySequence());
     }
 
     void SolveModule()
@@ -141,7 +169,11 @@ public class SimonManager : MonoBehaviour
 
         solved = true;
         canInput = false;
-        statusLight.material.color = Color.green;
-        gameManager.PuzzleSolved();
+
+        if (statusLight != null)
+            statusLight.material.color = Color.green;
+
+        if (gameManager != null)
+            gameManager.PuzzleSolved();
     }
 }
