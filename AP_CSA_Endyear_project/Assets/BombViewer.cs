@@ -14,7 +14,6 @@ public class BombViewer : MonoBehaviour
 
     public float zoomStep = 50f;
     public float zoomSmoothness = 8f;
-
     public float minDistance = 300f;
     public float maxDistance = 1000f;
 
@@ -37,66 +36,34 @@ public class BombViewer : MonoBehaviour
         if (target == null || Keyboard.current == null)
             return;
 
-        // Horizontal rotation
         if (Keyboard.current.leftArrowKey.isPressed)
             horizontalAngle -= rotationSpeed * Time.deltaTime;
 
         if (Keyboard.current.rightArrowKey.isPressed)
             horizontalAngle += rotationSpeed * Time.deltaTime;
 
-        // Vertical rotation
         if (Keyboard.current.upArrowKey.isPressed)
             verticalAngle += verticalSpeed * Time.deltaTime;
 
         if (Keyboard.current.downArrowKey.isPressed)
             verticalAngle -= verticalSpeed * Time.deltaTime;
 
-        // Chunk zoom with easing
         if (Keyboard.current.iKey.wasPressedThisFrame)
             targetDistance -= zoomStep;
 
         if (Keyboard.current.oKey.wasPressedThisFrame)
             targetDistance += zoomStep;
 
-        targetDistance = Mathf.Clamp(
-            targetDistance,
-            minDistance,
-            maxDistance
-        );
+        targetDistance = Mathf.Clamp(targetDistance, minDistance, maxDistance);
 
-        distance = Mathf.Lerp(
-            distance,
-            targetDistance,
-            zoomSmoothness * Time.deltaTime
-        );
+        distance = Mathf.Lerp(distance, targetDistance, zoomSmoothness * Time.deltaTime);
 
-        verticalAngle = Mathf.Clamp(
-            verticalAngle,
-            minVerticalAngle,
-            maxVerticalAngle
-        );
+        verticalAngle = Mathf.Clamp(verticalAngle, minVerticalAngle, maxVerticalAngle);
 
         UpdateCameraPosition();
     }
 
     void UpdateCameraPosition()
-{
-    float radians = currentAngle * Mathf.Deg2Rad;
-
-    Vector3 offset = new Vector3(
-        Mathf.Sin(radians) * distance,
-        height,
-        Mathf.Cos(radians) * distance
-    );
-
-    transform.position = target.position + offset;
-    transform.LookAt(target.position);
-}
-    void Update()
-{
-    float input = 0f;
-
-    if (UnityEngine.InputSystem.Keyboard.current != null)
     {
         float hRad = horizontalAngle * Mathf.Deg2Rad;
         float vRad = verticalAngle * Mathf.Deg2Rad;
@@ -110,9 +77,4 @@ public class BombViewer : MonoBehaviour
         transform.position = target.position + offset;
         transform.LookAt(target.position);
     }
-
-    currentAngle += input * rotationSpeed * Time.deltaTime;
-
-    UpdateCameraPosition();
-}
 }
