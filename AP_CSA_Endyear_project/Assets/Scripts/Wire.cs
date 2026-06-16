@@ -1,13 +1,14 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Wire : MonoBehaviour
 {
-    public Timer timer;
+    public BombGameManager gameManager;
+
     public bool correctWire;
-    private static int mistakes = 0;
     private Vector3 originalScale;
     public Renderer statusLight;
+
+    private bool solved = false;
 
     private void Start()
     {
@@ -16,37 +17,36 @@ public class Wire : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        transform.localScale = originalScale * 1.05f; 
+        if (!solved)
+            transform.localScale = originalScale * 1.05f;
     }
 
     private void OnMouseExit()
     {
-        transform.localScale = originalScale; 
+        transform.localScale = originalScale;
     }
 
     private void OnMouseDown()
     {
+        if (solved) return;
+
         if (correctWire)
         {
-            timer.bombDefused = true;
             transform.Rotate(0, 0, 45);
             SolveModule();
         }
         else
         {
-            mistakes++;
-
-            Debug.Log("Mistakes: " + mistakes + "/3");
-
-            if (mistakes >= 3)
-            {
-                Debug.Log("LOADING FINAL SCREEN");
-                SceneManager.LoadScene("Final_Screen");
-            }
+            gameManager.AddMistake();
         }
     }
-    void SolveModule(){
-        Debug.Log("Module Solved!");
+
+    void SolveModule()
+    {
+        if (solved) return;
+
+        solved = true;
         statusLight.material.color = Color.green;
+        gameManager.PuzzleSolved();
     }
 }
