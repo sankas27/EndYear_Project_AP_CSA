@@ -5,7 +5,7 @@ public class BombViewer : MonoBehaviour
     public Transform target;
 
     public float distance = 4f;
-    public float height = 1.5f;
+    public float height = 3f;
     public float rotationSpeed = 90f;
 
     private float currentAngle = 0f;
@@ -20,38 +20,34 @@ public class BombViewer : MonoBehaviour
 
         UpdateCameraPosition();
     }
-
-    void Update()
-    {
-        float input = 0f;
-
-        if (UnityEngine.InputSystem.Keyboard.current != null)
-        {
-            if (UnityEngine.InputSystem.Keyboard.current.leftArrowKey.isPressed)
-                input = -1f;
-
-            if (UnityEngine.InputSystem.Keyboard.current.rightArrowKey.isPressed)
-                input = 1f;
-        }
-
-        currentAngle += input * rotationSpeed * Time.deltaTime;
-
-        UpdateCameraPosition();
-    }
-
     void UpdateCameraPosition()
+{
+    float radians = currentAngle * Mathf.Deg2Rad;
+
+    Vector3 offset = new Vector3(
+        Mathf.Sin(radians) * distance,
+        height,
+        Mathf.Cos(radians) * distance
+    );
+
+    transform.position = target.position + offset;
+    transform.LookAt(target.position);
+}
+    void Update()
+{
+    float input = 0f;
+
+    if (UnityEngine.InputSystem.Keyboard.current != null)
     {
-        if (target == null) return;
+        if (UnityEngine.InputSystem.Keyboard.current.leftArrowKey.isPressed)
+            input = -1f;
 
-        float radians = currentAngle * Mathf.Deg2Rad;
-
-        Vector3 offset = new Vector3(
-            Mathf.Sin(radians) * distance,
-            height,
-            Mathf.Cos(radians) * distance
-        );
-
-        transform.position = target.position + offset;
-        transform.LookAt(target.position);
+        if (UnityEngine.InputSystem.Keyboard.current.rightArrowKey.isPressed)
+            input = 1f;
     }
+
+    currentAngle += input * rotationSpeed * Time.deltaTime;
+
+    UpdateCameraPosition();
+}
 }
