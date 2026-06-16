@@ -5,7 +5,7 @@ using TMPro;
 public class BombTimer : MonoBehaviour
 {
     [Header("Timer Settings")]
-    public float startTime = 60f;
+    public float startTimeMinutes = 5f;
 
     [Header("References")]
     public TMP_Text timerText;
@@ -15,7 +15,7 @@ public class BombTimer : MonoBehaviour
 
     void Start()
     {
-        timeRemaining = startTime;
+        timeRemaining = startTimeMinutes * 60f;
         UpdateTimerDisplay();
     }
 
@@ -30,7 +30,11 @@ public class BombTimer : MonoBehaviour
         {
             timeRemaining = 0;
             timerRunning = false;
-            TimerFinished();
+
+            UpdateTimerDisplay();
+
+            SceneManager.LoadScene("Final_Screen");
+            return;
         }
 
         UpdateTimerDisplay();
@@ -38,12 +42,9 @@ public class BombTimer : MonoBehaviour
 
     void UpdateTimerDisplay()
     {
-        timerText.text = Mathf.CeilToInt(timeRemaining).ToString();
-    }
+        int minutes = Mathf.FloorToInt(timeRemaining / 60);
+        int seconds = Mathf.FloorToInt(timeRemaining % 60);
 
-    void TimerFinished()
-    {
-        timerText.text = "0";
-        SceneManager.LoadScene("Final_Screen");
+        timerText.text = string.Format("{0}:{1:00}", minutes, seconds);
     }
 }
