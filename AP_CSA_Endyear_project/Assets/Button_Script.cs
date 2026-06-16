@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Button_Script : MonoBehaviour, IConfirmablePuzzle
+public class Button_Script : MonoBehaviour
 {
     public Button mainButton;
     public Renderer statusLight;

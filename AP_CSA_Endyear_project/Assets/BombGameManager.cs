@@ -1,38 +1,63 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class BombGameManager : MonoBehaviour
 {
-    public int maxMistakes = 3;
-    public int totalPuzzles = 4;
+    [Header("Game Settings")]
+    public int totalPuzzles = 5;
 
-    public string loseSceneName = "Final_Screen";
-    public string winSceneName = "Win_Screen";
+    [Header("Strike Indicators")]
+    public Renderer strike1;
+    public Renderer strike2;
+    public Renderer strike3;
 
-    public TMP_Text mistakeText;
-
-    private int mistakes = 0;
     private int puzzlesSolved = 0;
+    private int mistakes = 0;
 
-    public void AddMistake()
+    void Start()
     {
-        mistakes++;
+        if (strike1 != null)
+            strike1.material.color = Color.black;
 
-        if (mistakeText != null)
-            mistakeText.text = "Mistakes: " + mistakes + "/" + maxMistakes;
+        if (strike2 != null)
+            strike2.material.color = Color.black;
 
-        if (mistakes >= maxMistakes)
-            SceneManager.LoadScene(loseSceneName);
+        if (strike3 != null)
+            strike3.material.color = Color.black;
     }
 
     public void PuzzleSolved()
     {
         puzzlesSolved++;
 
-        Debug.Log("Puzzles solved: " + puzzlesSolved + "/" + totalPuzzles);
+        Debug.Log("Puzzles Solved: " + puzzlesSolved + "/" + totalPuzzles);
 
         if (puzzlesSolved >= totalPuzzles)
-            SceneManager.LoadScene(winSceneName);
+        {
+            SceneManager.LoadScene("Win_Screen");
+        }
+    }
+
+    public void AddMistake()
+    {
+        mistakes++;
+
+        Debug.Log("Mistakes: " + mistakes);
+
+        if (mistakes >= 1 && strike1 != null)
+            strike1.material.color = Color.red;
+
+        if (mistakes >= 2 && strike2 != null)
+            strike2.material.color = Color.red;
+
+        if (mistakes >= 3 && strike3 != null)
+            strike3.material.color = Color.red;
+
+        if (mistakes >= 3)
+        {
+            Debug.Log("Too many mistakes!");
+
+            SceneManager.LoadScene("Lose_Screen");
+        }
     }
 }

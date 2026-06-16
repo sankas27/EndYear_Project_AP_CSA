@@ -13,6 +13,7 @@ public class KeyManager : MonoBehaviour
     private string[] correctOrder;
     private int currentStep = 0;
     private bool solved = false;
+    private bool wrongInput = false;
 
     public TextMeshPro key1Text;
     public TextMeshPro key2Text;
@@ -48,6 +49,11 @@ public class KeyManager : MonoBehaviour
         key3Button.symbol = chosenSymbols[2];
         key4Button.symbol = chosenSymbols[3];
 
+        key1Button.keypadManager = this;
+        key2Button.keypadManager = this;
+        key3Button.keypadManager = this;
+        key4Button.keypadManager = this;
+
         correctOrder = new string[4];
         int orderIndex = 0;
 
@@ -67,19 +73,40 @@ public class KeyManager : MonoBehaviour
     public void PressButton(string symbol)
     {
         if (solved) return;
+        if (currentStep >= correctOrder.Length) return;
 
-        if (symbol == correctOrder[currentStep])
+        if (!wrongInput && symbol == correctOrder[currentStep])
         {
             currentStep++;
-
-            if (currentStep >= correctOrder.Length)
-                SolveModule();
         }
         else
         {
-            gameManager.AddMistake();
-            currentStep = 0;
+            wrongInput = true;
+            currentStep++;
         }
+    }
+
+    public void ConfirmAnswer()
+    {
+        if (solved) return;
+
+        if (!wrongInput && currentStep == correctOrder.Length)
+        {
+            SolveModule();
+        }
+        else
+        {
+            if (gameManager != null)
+                gameManager.AddMistake();
+
+            ResetAnswer();
+        }
+    }
+
+    public void ResetAnswer()
+    {
+        currentStep = 0;
+        wrongInput = false;
     }
 
     void SolveModule()
@@ -87,7 +114,11 @@ public class KeyManager : MonoBehaviour
         if (solved) return;
 
         solved = true;
-        statusLight.material.color = Color.green;
-        gameManager.PuzzleSolved();
+
+        if (statusLight != null)
+            statusLight.material.color = Color.green;
+
+        if (gameManager != null)
+            gameManager.PuzzleSolved();
     }
 }

@@ -5,6 +5,8 @@ public class BombViewer : MonoBehaviour
 {
     public Transform target;
 
+    public bool controlsEnabled = true;
+
     [Header("Orbit")]
     public float rotationSpeed = 90f;
 
@@ -33,6 +35,9 @@ public class BombViewer : MonoBehaviour
 
     void Update()
     {
+        if (!controlsEnabled)
+            return;
+
         if (target == null || Keyboard.current == null)
             return;
 
@@ -56,9 +61,17 @@ public class BombViewer : MonoBehaviour
 
         targetDistance = Mathf.Clamp(targetDistance, minDistance, maxDistance);
 
-        distance = Mathf.Lerp(distance, targetDistance, zoomSmoothness * Time.deltaTime);
+        distance = Mathf.Lerp(
+            distance,
+            targetDistance,
+            zoomSmoothness * Time.deltaTime
+        );
 
-        verticalAngle = Mathf.Clamp(verticalAngle, minVerticalAngle, maxVerticalAngle);
+        verticalAngle = Mathf.Clamp(
+            verticalAngle,
+            minVerticalAngle,
+            maxVerticalAngle
+        );
 
         UpdateCameraPosition();
     }
@@ -75,6 +88,6 @@ public class BombViewer : MonoBehaviour
         ) * distance;
 
         transform.position = target.position + offset;
-        transform.LookAt(target.position);
+        transform.LookAt(target.position, Vector3.up);
     }
 }

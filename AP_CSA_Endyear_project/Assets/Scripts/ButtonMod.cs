@@ -50,15 +50,7 @@ public class ButtonMod : MonoBehaviour
         transform.localPosition = originalPosition + Vector3.down * 0.02f;
         currentPresses++;
 
-        if (currentPresses == requiredPresses)
-        {
-            SolveModule();
-        }
-        else if (currentPresses > requiredPresses)
-        {
-            gameManager.AddMistake();
-            currentPresses = 0;
-        }
+        Debug.Log("ButtonMod presses: " + currentPresses);
 
         Invoke(nameof(ResetButton), 0.1f);
     }
@@ -68,12 +60,39 @@ public class ButtonMod : MonoBehaviour
         transform.localPosition = originalPosition;
     }
 
+    public void ConfirmAnswer()
+    {
+        if (solved) return;
+
+        if (currentPresses == requiredPresses)
+        {
+            SolveModule();
+        }
+        else
+        {
+            if (gameManager != null)
+                gameManager.AddMistake();
+
+            ResetAnswer();
+        }
+    }
+
+    public void ResetAnswer()
+    {
+        currentPresses = 0;
+        Debug.Log("ButtonMod reset.");
+    }
+
     void SolveModule()
     {
         if (solved) return;
 
         solved = true;
-        statusLight.material.color = Color.green;
-        gameManager.PuzzleSolved();
+
+        if (statusLight != null)
+            statusLight.material.color = Color.green;
+
+        if (gameManager != null)
+            gameManager.PuzzleSolved();
     }
 }

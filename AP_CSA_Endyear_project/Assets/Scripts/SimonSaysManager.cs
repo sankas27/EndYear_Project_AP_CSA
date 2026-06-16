@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimonManager : MonoBehaviour, IConfirmablePuzzle
+public class SimonManager : MonoBehaviour
 {
     public BombGameManager gameManager;
 
@@ -14,39 +14,94 @@ public class SimonManager : MonoBehaviour, IConfirmablePuzzle
 
     private List<SimonColor> sequence = new List<SimonColor>();
     private int currentInputIndex = 0;
+
     private bool canInput = false;
     private bool solved = false;
-
     private bool fullSequenceEntered = false;
     private bool madeMistake = false;
+    private bool sequenceStarted = false;
 
     public enum SimonColor { Blue, Green, Red, Yellow }
 
     private void Start()
     {
+        ResetAnswer();
+    }
+
+    public void ConfirmAnswer()
+    {
+        if (solved) return;
+
+        if (!sequenceStarted)
+        {
+            sequenceStarted = true;
+            StartCoroutine(PlaySequence());
+            return;
+        }
+
+        if (madeMistake || !fullSequenceEntered)
+        {
+            if (gameManager != null)
+                gameManager.AddMistake();
+
+            ResetAnswer();
+            return;
+        }
+
+        if (sequence.Count >= 4)
+        {
+            SolveModule();
+        }
+        else
+        {
+            AddRandomColor();
+            StartCoroutine(PlaySequence());
+        }
+    }
+
+    public void ResetAnswer()
+    {
+        StopAllCoroutines();
+
+        sequence.Clear();
         AddRandomColor();
-        StartCoroutine(PlaySequence());
+
+        currentInputIndex = 0;
+        canInput = false;
+        fullSequenceEntered = false;
+        madeMistake = false;
+        sequenceStarted = false;
     }
 
     void AddRandomColor()
+{
+    SimonColor[] debugSequence =
     {
-        sequence.Add((SimonColor)Random.Range(0, 4));
-    }
+        //sequence.Add((SimonColor)Random.Range(0, 4));
+        SimonColor.Blue,
+        SimonColor.Green,
+        SimonColor.Red,
+        SimonColor.Yellow
+    };
+
+    sequence.Add(debugSequence[sequence.Count]);
+}
 
     IEnumerator PlaySequence()
     {
         canInput = false;
-        yield return new WaitForSeconds(1f);
+        fullSequenceEntered = false;
+        madeMistake = false;
 
-        foreach (SimonColor color in sequence)
+        yield return new WaitForSeconds(0.5f);
+
+        foreach (SimonColor color in new List<SimonColor>(sequence))
         {
             yield return StartCoroutine(FlashColor(color));
             yield return new WaitForSeconds(0.3f);
         }
 
         currentInputIndex = 0;
-        fullSequenceEntered = false;
-        madeMistake = false;
         canInput = true;
     }
 
@@ -112,55 +167,21 @@ public class SimonManager : MonoBehaviour, IConfirmablePuzzle
 
         SimonColor expectedColor = GetExpectedColor(sequence[currentInputIndex]);
 
-        if (pressedColor == expectedColor)
+        if (!madeMistake && pressedColor == expectedColor)
         {
             currentInputIndex++;
-
-            if (currentInputIndex >= sequence.Count)
-            {
-                fullSequenceEntered = true;
-                canInput = false;
-                Debug.Log("Simon sequence entered. Press confirm.");
-            }
         }
         else
         {
             madeMistake = true;
+            currentInputIndex++;
+        }
+
+        if (currentInputIndex >= sequence.Count)
+        {
             fullSequenceEntered = true;
             canInput = false;
-            Debug.Log("Simon wrong input. Press confirm.");
         }
-    }
-
-    public void ConfirmAnswer()
-    {
-        if (solved) return;
-
-        if (madeMistake || !fullSequenceEntered)
-        {
-            if (gameManager != null)
-                gameManager.AddMistake();
-
-            ResetAnswer();
-            return;
-        }
-
-        if (sequence.Count >= 4)
-        {
-            SolveModule();
-        }
-        else
-        {
-            AddRandomColor();
-            StartCoroutine(PlaySequence());
-        }
-    }
-
-    public void ResetAnswer()
-    {
-        sequence.Clear();
-        AddRandomColor();
-        StartCoroutine(PlaySequence());
     }
 
     void SolveModule()

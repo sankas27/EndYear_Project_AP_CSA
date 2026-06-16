@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class PuzzleConfirmButton : MonoBehaviour
 {
-    public MonoBehaviour puzzleScript;
+    public GameObject puzzleObject;
 
-    public void ConfirmPressed()
+    private void OnMouseDown()
     {
-        IConfirmablePuzzle puzzle = puzzleScript as IConfirmablePuzzle;
+        if (puzzleObject == null)
+        {
+            Debug.LogError("No puzzle object assigned.");
+            return;
+        }
 
-        if (puzzle != null)
-            puzzle.ConfirmAnswer();
-        else
-            Debug.LogError("This puzzle does not have ConfirmAnswer().");
+        Debug.Log("CONFIRM CLICKED: " + puzzleObject.name);
+        puzzleObject.SendMessage("ConfirmAnswer", SendMessageOptions.DontRequireReceiver);
     }
 }

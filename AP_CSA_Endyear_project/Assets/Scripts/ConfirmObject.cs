@@ -2,19 +2,18 @@ using UnityEngine;
 
 public class ConfirmObject : MonoBehaviour
 {
-    public MonoBehaviour puzzleScript;
+    public GameObject puzzleObject;
 
     private void OnMouseDown()
     {
-        IConfirmablePuzzle puzzle = puzzleScript as IConfirmablePuzzle;
+        if (puzzleObject == null)
+        {
+            Debug.LogError("No puzzle object assigned.");
+            return;
+        }
 
-        if (puzzle != null)
-        {
-            puzzle.ConfirmAnswer();
-        }
-        else
-        {
-            Debug.LogError("Assigned puzzle does not implement IConfirmablePuzzle.");
-        }
+        Debug.Log("CONFIRM CLICKED: " + puzzleObject.name);
+
+        puzzleObject.SendMessage("ConfirmAnswer", SendMessageOptions.DontRequireReceiver);
     }
 }

@@ -2,13 +2,11 @@ using UnityEngine;
 
 public class Wire : MonoBehaviour
 {
-    public BombGameManager gameManager;
+    public WireManager wireManager;
 
     public bool correctWire;
-    private Vector3 originalScale;
-    public Renderer statusLight;
 
-    private bool solved = false;
+    private Vector3 originalScale;
 
     private void Start()
     {
@@ -17,8 +15,7 @@ public class Wire : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        if (!solved)
-            transform.localScale = originalScale * 1.05f;
+        transform.localScale = originalScale * 1.05f;
     }
 
     private void OnMouseExit()
@@ -28,25 +25,8 @@ public class Wire : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (solved) return;
+        wireManager.SelectWire(this);
 
-        if (correctWire)
-        {
-            transform.Rotate(0, 0, 45);
-            SolveModule();
-        }
-        else
-        {
-            gameManager.AddMistake();
-        }
-    }
-
-    void SolveModule()
-    {
-        if (solved) return;
-
-        solved = true;
-        statusLight.material.color = Color.green;
-        gameManager.PuzzleSolved();
+        Debug.Log(gameObject.name + " selected");
     }
 }
